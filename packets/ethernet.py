@@ -2,9 +2,9 @@ import socket
 from dataclasses import dataclass
 from .models import enforce_mac_address
 import struct
-
+from .base import DatalinkPacket
 @dataclass()
-class EthernetPacket:
+class EthernetPacket(DatalinkPacket):
     src_addr: str
     dest_addr: str
     type: int
@@ -19,3 +19,6 @@ class EthernetPacket:
             dest_addr=enforce_mac_address(dest_addr),
             type=socket.htons(type)
         )
+
+    def layer(self):
+        return 2

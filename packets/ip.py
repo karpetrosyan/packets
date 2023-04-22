@@ -2,12 +2,12 @@ import socket
 import struct
 from dataclasses import dataclass
 
-from .icmp import ICMPPacket
+from .base import NetworkPacket
 from .models import enforce_ipv4
 
 
 @dataclass
-class IPPacket:
+class IPPacket(NetworkPacket):
 
     version: int
     ihl: int
@@ -49,6 +49,7 @@ class IPPacket:
             desc_addr=target,
             data=data
         )
-        if proto == 1:
-            obj.icmp = ICMPPacket.parse(icmp_packet=data)
+        print(obj, )
+        input()
         return obj
+
