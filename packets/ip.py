@@ -19,8 +19,8 @@ class IPPacket(NetworkPacket):
     id: int
     ttl: int
     protocol: int
-    src_addr: int
-    desc_addr: int
+    src_addr: str
+    desc_addr: str
     data: bytes
 
     @classmethod
@@ -49,7 +49,5 @@ class IPPacket(NetworkPacket):
             desc_addr=target,
             data=data
         )
-        print(obj, )
-        input()
         return obj
 
