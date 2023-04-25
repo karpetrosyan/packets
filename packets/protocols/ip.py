@@ -2,26 +2,39 @@ import socket
 import struct
 from dataclasses import dataclass
 
-from .base import NetworkPacket
 from .models import enforce_ipv4
 
 
-@dataclass
-class IPPacket(NetworkPacket):
+class IPPacket:
 
-    version: int
-    ihl: int
-    type_of_service: int
-    length: int
-    flags: int
-    checksum: int
-    fragment_offset: int
-    id: int
-    ttl: int
-    protocol: int
-    src_addr: int
-    desc_addr: int
-    data: bytes
+
+    def __init__(self,
+                version: int,
+                ihl: int,
+                type_of_service: int,
+                length: int,
+                flags: int,
+                checksum: int,
+                fragment_offset: int,
+                id: int,
+                ttl: int,
+                protocol: int,
+                src_addr: int,
+                desc_addr: int,
+                data: bytes,):
+        self.version = version
+        self.ihl = ihl,
+        self.type_of_service = type_of_service
+        self.length = length
+        self.flags = flags
+        self.checksum = checksum
+        self.fragment_offset = fragment_offset
+        self.id = id
+        self.ttl = ttl
+        self.protocol = protocol
+        self.src_addr = src_addr
+        self.dest_addr = desc_addr
+        self.data = data
 
     @classmethod
     def parse(cls, ip_packet: bytes):
@@ -49,7 +62,5 @@ class IPPacket(NetworkPacket):
             desc_addr=target,
             data=data
         )
-        print(obj, )
-        input()
         return obj
 

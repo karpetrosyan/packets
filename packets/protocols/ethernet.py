@@ -1,13 +1,17 @@
 import socket
-from dataclasses import dataclass
-from .models import enforce_mac_address
 import struct
-from .base import DatalinkPacket
-@dataclass()
-class EthernetPacket(DatalinkPacket):
-    src_addr: str
-    dest_addr: str
-    type: int
+
+from ..models import enforce_mac_address
+
+
+class EthernetPacket:
+    def __init__(self,
+                 src_addr: str,
+                 dest_addr: str,
+                 type: int):
+        self.src_addr = src_addr
+        self.dest_addr = dest_addr
+        self.type = type
 
     @classmethod
     def parse(cls, packet: bytes):
@@ -19,6 +23,3 @@ class EthernetPacket(DatalinkPacket):
             dest_addr=enforce_mac_address(dest_addr),
             type=socket.htons(type)
         )
-
-    def layer(self):
-        return 2
