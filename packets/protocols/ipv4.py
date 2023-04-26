@@ -2,10 +2,10 @@ import socket
 import struct
 from dataclasses import dataclass
 
-from .models import enforce_ipv4
+from ..utils import enforce_ipv4
+from .base import NetworkPacket
 
-
-class IPPacket:
+class IPv4Packet(NetworkPacket):
 
 
     def __init__(self,
@@ -20,7 +20,7 @@ class IPPacket:
                 ttl: int,
                 protocol: int,
                 src_addr: int,
-                desc_addr: int,
+                dest_addr: int,
                 data: bytes,):
         self.version = version
         self.ihl = ihl,
@@ -33,15 +33,18 @@ class IPPacket:
         self.ttl = ttl
         self.protocol = protocol
         self.src_addr = src_addr
-        self.dest_addr = desc_addr
+        self.dest_addr = dest_addr
         self.data = data
 
+    def __repr__(self):
+        return f"<IPPacket src_addr={self.src_addr} dest_addr={self.dest_addr}>"
+
     @classmethod
-    def parse(cls, ip_packet: bytes):
-        version_header_length = ip_packet[0]
+    def parse(cls, packet: bytes):
+        version_header_length = packet[0]
         header_length = (version_header_length & 15) * 4
-        version_ihl, type_of_service, total_length, id, fragment_offset, ttl, proto, checksum, src, target = struct.unpack('B B H H H B B H 4s 4s', ip_packet[:20])
-        data = ip_packet[header_length:]
+        version_ihl, type_of_service, total_length, id, fragment_offset, ttl, proto, checksum, src, target = struct.unpack('B B H H H B B H 4s 4s', packet[:20])
+        data = packet[header_length:]
         src = enforce_ipv4(src)
         target = enforce_ipv4(target)
         version, ihl = version_ihl >> 4, version_ihl & 0xF
@@ -59,7 +62,7 @@ class IPPacket:
             ttl=ttl,
             protocol=proto,
             src_addr=src,
-            desc_addr=target,
+            dest_addr=target,
             data=data
         )
         return obj

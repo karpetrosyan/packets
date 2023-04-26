@@ -1,10 +1,10 @@
 import socket
 import struct
 
-from ..models import enforce_mac_address
+from ..utils import enforce_mac_address
+from .base import DataLinkPacket
 
-
-class EthernetPacket:
+class EthernetPacket(DataLinkPacket):
     def __init__(self,
                  src_addr: str,
                  dest_addr: str,
@@ -12,6 +12,12 @@ class EthernetPacket:
         self.src_addr = src_addr
         self.dest_addr = dest_addr
         self.type = type
+
+    def get_type(self):
+        return self.type
+
+    def __repr__(self):
+        return f"<EthernetPacket src_addr={self.src_addr} dest_addr={self.dest_addr} type={self.type}>"
 
     @classmethod
     def parse(cls, packet: bytes):

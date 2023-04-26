@@ -1,19 +1,8 @@
-from packets import transports
+from packets.transports import SyncTransport
 from packets.handlers import Handler
-from packets.filters import Filter
-from packets.protocols import Protocol
 
-tr = transports.SyncRawTransport(interface="enp0s3")
+handler = Handler(name="test")
 
-def flt(packet):
-    return False
+transport = SyncTransport(handlers=[handler])
 
-filter = Filter(
-                filter_functions=[flt],
-                proto=Protocol.ip)
-
-ipdestlogger = Handler(name="iplogger",
-                       filters=(filter, ),
-                       callback=None)
-
-tr.listen_packets(handlers=[ipdestlogger])
+transport.serve()

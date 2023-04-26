@@ -1,10 +1,10 @@
 import socket
 import struct
 from typing_extensions import Self
+from .base import NetworkPacket
 
 
-
-class ICMPPacket:
+class ICMPPacket(NetworkPacket):
 
     def __init__(self,
                  type: int,
