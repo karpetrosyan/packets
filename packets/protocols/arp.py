@@ -1,8 +1,8 @@
 import struct
 
-from .base import DataLinkPacket
+from .base import NetworkPacket
 
-class ARPPacket(DataLinkPacket):
+class ARPPacket(NetworkPacket):
 
     def __init__(self,
                  hardware_type: int,

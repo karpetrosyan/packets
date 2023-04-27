@@ -1,7 +1,7 @@
 import socket
 import struct
 from dataclasses import dataclass
-
+from ..utils import enforce_ipv6
 from ..utils import enforce_ipv4
 from .base import NetworkPacket
 
@@ -25,8 +25,24 @@ class IPv6Packet(NetworkPacket):
         self.src_addr = src_addr
         self.dest_addr = dest_addr
 
+    def __repr__(self):
+        return f"<IPv6Packet src_addr={self.src_addr} dest_addr={self.dest_addr}>"
+
     @classmethod
     def parse(cls, packet: bytes):
         unpacked = struct.unpack("4s H B B 16s 16s", packet)
-        breakpoint()
-        print(unpacked)
+        version_traffic_flow, payload_length, next_header, hop_limit, src_addr, dest_addr = unpacked
+        version = int.from_bytes(version_traffic_flow, "big") >> 28
+        traffic_clss = int.from_bytes(version_traffic_flow, "big") & 267386880
+        flow_label = int.from_bytes(version_traffic_flow, "big") & 1048575
+        obj = cls(
+            version = version,
+            traffic_class=traffic_clss,
+            flow_label=flow_label,
+            payload_length=payload_length,
+            next_header=next_header,
+            hop_limit=hop_limit,
+            src_addr=enforce_ipv6(src_addr),
+            dest_addr=enforce_ipv6(src_addr)
+            )
+        return obj

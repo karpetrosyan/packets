@@ -4,7 +4,7 @@ from .handlers import Handler
 from .data_units import Frame
 from .layers import DataLinkLayer, NetworkLayer
 from .protocols.base import PacketStack
-socket.IPPROTO_ICMP
+
 MAXIMUM_FRAME_SIZE = 1518  # Maximum size of ethernet frame
 class Transport:
 
