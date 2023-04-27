@@ -1,12 +1,13 @@
 class DataUnit:
 
-    def __init__(self, data: memoryview, pointer: int = 0):
+    def __init__(self, data: memoryview, end: int, start: int = 0):
         self._data = data
-        self.pointer = pointer
+        self.start = start
+        self.end = end
 
     @property
     def data(self):
-        return self._data[self.pointer:]
+        return self._data[self.start:self.end]
 
 class Frame(DataUnit):
     ...

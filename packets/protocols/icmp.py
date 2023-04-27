@@ -14,6 +14,14 @@ class ICMPPacket(NetworkPacket):
         self.code = code
         self.checksum = checksum
 
+    @classmethod
+    def parse(cls, packet: bytes):
+        format = "B B H"
+        type, code, checksum = struct.unpack(format, packet)
+        return cls(type=type,
+                   code=code,
+                   checksum=socket.htons(checksum))
+
 class ICMPEchoReplyPacket(ICMPPacket):
 
     def __init__(self,
@@ -30,6 +38,9 @@ class ICMPEchoReplyPacket(ICMPPacket):
         self.sequence = sequence
         self.data = data
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} type={self.type} code={self.code} checksum={hex(self.checksum)}>"
+
     @classmethod
     def parse(cls, packet: bytes) -> Self:
         format = "B B H H H"
@@ -41,3 +52,9 @@ class ICMPEchoReplyPacket(ICMPPacket):
                    identifier=id,
                    sequence=seq,
                    data=data)
+
+class ICMPEchoPacket(ICMPEchoReplyPacket):
+    ...
+
+class ICMPReplyPacket(ICMPEchoReplyPacket):
+    ...

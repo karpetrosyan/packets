@@ -4,6 +4,7 @@ from .handlers import Handler
 from .data_units import Frame
 from .layers import DataLinkLayer, NetworkLayer
 from .protocols.base import PacketStack
+from .protocols.ipv4 import IPv4Packet
 
 MAXIMUM_FRAME_SIZE = 1518  # Maximum size of ethernet frame
 class Transport:
@@ -37,7 +38,10 @@ class SyncTransport(Transport):
                 print("PACKET")
                 print(datalink_packet)
                 print(network_packet)
+                if isinstance(network_packet, IPv4Packet):
+                    if network_packet.icmp:
+                        print(network_packet.icmp)
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
-        self.socket.recv_into(frame_buffer)
-        return Frame(data=memoryview(frame_buffer))
+        received = self.socket.recv_into(frame_buffer)
+        return Frame(data=memoryview(frame_buffer), end=received)

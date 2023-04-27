@@ -1,9 +1,11 @@
 import socket
 import struct
+import typing
 from dataclasses import dataclass
 
 from ..utils import enforce_ipv4
 from .base import NetworkPacket
+from .icmp import ICMPPacket
 
 class IPv4Packet(NetworkPacket):
 
@@ -19,9 +21,10 @@ class IPv4Packet(NetworkPacket):
                 id: int,
                 ttl: int,
                 protocol: int,
-                src_addr: int,
-                dest_addr: int,
-                data: bytes,):
+                src_addr: str,
+                dest_addr: str,
+                data: bytes,
+                icmp: typing.Optional[ICMPPacket] = None):
         self.version = version
         self.ihl = ihl,
         self.type_of_service = type_of_service
@@ -35,6 +38,7 @@ class IPv4Packet(NetworkPacket):
         self.src_addr = src_addr
         self.dest_addr = dest_addr
         self.data = data
+        self.icmp = icmp
 
     def __repr__(self):
         return f"<IPPacket src_addr={self.src_addr} dest_addr={self.dest_addr}>"
