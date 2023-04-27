@@ -59,7 +59,7 @@ class NetworkLayer(Layer):
             return ICMPReplyPacket.parse(packet=packet)
         else:
             logger.warning(f"Invalid icmp packet {icmp_packet.type}")
-
+            raise Exception
 
     def _decapsulate_ipv4(self, packet: Packet, stack: PacketStack) -> typing.Tuple[Segment, ProtocolPacket]:
         ip_packet = IPv4Packet.parse(packet=packet.data)
@@ -76,6 +76,7 @@ class NetworkLayer(Layer):
         return Segment(packet.data[40:], end=packet.end), ip_packet
 
     def decapsulate(self, data: DataUnit, stack: PacketStack) -> typing.Tuple[DataUnit, ProtocolPacket]:
+        assert stack.datalink_packet
         protocol_type = stack.datalink_packet.get_type()
         packet = typing.cast(Packet, data)
         if protocol_type == 2048:
@@ -86,6 +87,7 @@ class NetworkLayer(Layer):
             return self._decapsulate_arp(packet=packet, stack=stack)
         else:
             logger.warning(f"Unsupported protocol type received {protocol_type}")
+            raise Exception
     def get_layer(self):
         return 3
 
@@ -95,7 +97,7 @@ class TransportLayer(Layer):
         ...
 
     def decapsulate(self, data: DataUnit, stack: PacketStack) -> typing.Tuple[DataUnit, ProtocolPacket]:
-        return
+        return  # type: ignore
 
     def get_layer(self):
         return 4

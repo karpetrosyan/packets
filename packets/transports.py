@@ -31,16 +31,17 @@ class SyncTransport(Transport):
         while True:
                 stack = PacketStack()
                 frame = self.receive_frame()
-                layer = DataLinkLayer()
-                packet, datalink_packet = layer.decapsulate(data=frame, stack=stack)
-                layer = NetworkLayer()
-                segment, network_packet = layer.decapsulate(data=packet, stack=stack)
+                datalink_layer = DataLinkLayer()
+                packet, datalink_packet = datalink_layer.decapsulate(data=frame, stack=stack)
+                network_layer = NetworkLayer()
+                segment, network_packet = network_layer.decapsulate(data=packet, stack=stack)
                 print("PACKET")
                 print(datalink_packet)
                 print(network_packet)
                 if isinstance(network_packet, IPv4Packet):
                     if network_packet.icmp:
                         print(network_packet.icmp)
+                        # print(bytes(network_packet.icmp.data))
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
         received = self.socket.recv_into(frame_buffer)
