@@ -1,59 +1,43 @@
-import logging
-import socket
 import typing
-
-from .ethernet import EthernetPacket
+import socket
 from .handlers import Handler
-from .ip import IPPacket
-from .icmp import ICMPPacket
-
-logger = logging.getLogger("packets")
-class RawTransport:
+from .data_units import Frame
+from .layers import DataLinkLayer, NetworkLayer
+from .protocols.base import PacketStack
+socket.IPPROTO_ICMP
+MAXIMUM_FRAME_SIZE = 1518  # Maximum size of ethernet frame
+class Transport:
 
     def __init__(self,
-                 interface: typing.Optional[str],
-                 socket_options: typing.Optional[typing.Iterable[typing.Tuple[int, int, int]]] = None):
-        self._socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
-        # if interface:
-        #     self._socket.bind((interface, 0))
-        if socket_options:
-            for option in socket_options:
-                self._socket.setsockopt(*option)
+                 handlers: typing.Iterable[Handler],
+                 interface: typing.Optional[str] = None,
+                 ):
+        self.socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
+        self.handlers = handlers
+        if interface:
+            self.socket.bind((interface, 0))
 
-    def listen_packets(self, handlers: typing.List[Handler]):
-        raise NotImplementedError
+    def serve(self) -> None:
+        raise NotImplementedError()
+
+    def receive_frame(self) -> Frame:
+        raise NotImplementedError()
 
 
-class SyncRawTransport(RawTransport):
+class SyncTransport(Transport):
 
-    def listen_packets(self, handlers: typing.List[Handler]):
+    def serve(self) -> None:
         while True:
-            logger.debug("Receiving a packet")
-            packet = self._socket.recv(1024*1024)
-            logger.debug("Packet was received")
-            invalid_handlers = set()
-            ethernet_packet = EthernetPacket.parse(packet=packet[:14])
-            logger.debug("Packet successfully parsed to ethernet packet")
-            for handler in handlers:
-                if handler not in invalid_handlers:
-                    logger.debug(f"Processing ethernet packet for handler `{handler.name}`")
-                    is_valid = handler.process_datalink(ethernet_packet)
-                    logger.debug(f"Ethernet packet is {'valid' if is_valid else 'invalid'} for handler `{handler.name}`")
-                    if not is_valid:
-                        invalid_handlers.add(handler)
-
-            logger.debug("Packet successfully parsed to ip packet")
-            ip_packet = IPPacket.parse(packet[14:])
-            for handler in handlers:
-                if handler not in invalid_handlers:
-                    logger.debug(f"Processing ip packet for handler `{handler.name}`")
-                    is_valid = handler.process_network(ip_packet)
-                    logger.debug(f"Ip packet is {'valid' if is_valid else 'invalid'} for handler `{handler.name}`")
-                    if not is_valid:
-                        invalid_handlers.add(handler)
-
-            try:
-                icmp = ICMPPacket.get_from_packet(ip_packet.data)
-            except Exception as e:
-                ...
-            # print([handler for handler in handlers if handler not in invalid_handlers])
+                stack = PacketStack()
+                frame = self.receive_frame()
+                layer = DataLinkLayer()
+                packet, datalink_packet = layer.decapsulate(data=frame, stack=stack)
+                layer = NetworkLayer()
+                segment, network_packet = layer.decapsulate(data=packet, stack=stack)
+                print("PACKET")
+                print(datalink_packet)
+                print(network_packet)
+    def receive_frame(self) -> Frame:
+        frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
+        self.socket.recv_into(frame_buffer)
+        return Frame(data=memoryview(frame_buffer))

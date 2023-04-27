@@ -1,32 +1,28 @@
 import typing
 from .filters import Filter
-from .base import DatalinkPacket, NetworkPacket
-import logging
-
-logger = logging.getLogger("packets")
+from .protocols.base import ProtocolPacket, PacketStack
 
 class Handler:
 
     def __init__(self,
                  name: str,
-                 filters: typing.Tuple[Filter],
-                 callback: typing.Optional[typing.Callable]):
+                 filters: typing.Optional[typing.Iterable[Filter]] = None,
+                 callback: typing.Optional[typing.Callable[[typing.Dict], None]] = None):
+        if filters is None:
+           filters = typing.cast(typing.Iterable[Filter], [])
+
         self.name = name
         self.filters = filters
         self.callback = callback
 
-    def process_datalink(self, packet: DatalinkPacket) -> bool:
+    def validate(self, packet: ProtocolPacket) -> bool:
         for filter in self.filters:
-            if filter.layer == 2:
-                is_valid = filter.filter(packet)
+            for filter_function in filter.filter_functions:
+                is_valid = filter_function(packet)
                 if not is_valid:
                     return False
         return True
 
-    def process_network(self, packet: NetworkPacket) -> bool:
-        for filter in self.filters:
-            if filter.layer == 3:
-                is_valid = filter.filter(packet)
-                if not is_valid:
-                    return False
-        return True
+    def handle_success(self):
+        if self.callback:
+            self.callback()
