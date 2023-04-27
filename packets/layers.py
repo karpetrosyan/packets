@@ -53,16 +53,12 @@ class NetworkLayer(Layer):
             ip_packet_bytes = packet.data[:40]
             ip_packet = IPv6Packet.parse(packet=ip_packet_bytes)
             stack.push(ip_packet)
-            breakpoint()
-            raise Exception
             return Segment(packet.data[40:]), ip_packet
         elif protocol_type == 2054:
-            breakpoint()
             arp_packet_bytes = packet.data[:28]
             arp_packet = ARPPacket.parse(packet=arp_packet_bytes)
-            breakpoint()
-            print(arp_packet)
-            raise
+            stack.push(arp_packet)
+            return Segment(packet.data[:28]), arp_packet
         else:
             logger.warning(f"Unsupported protocol type received {protocol_type}")
     def get_layer(self):

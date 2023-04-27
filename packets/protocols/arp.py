@@ -1,7 +1,8 @@
 import struct
 
+from .base import DataLinkPacket
 
-class ARPPacket:
+class ARPPacket(DataLinkPacket):
 
     def __init__(self,
                  hardware_type: int,
@@ -24,9 +25,12 @@ class ARPPacket:
         self.target_hardware_address = target_hardware_address
         self.target_protocol_address = target_protocol_address
 
+    def __repr__(self):
+        return f"<ARPPacket hardware_type={self.hardware_type}>"
+
     @classmethod
     def parse(cls, packet: bytes):
-        hardware_type, protocol_type, hardware_length, protocol_length, operation, sender_hardware_address, sender_protocol_address, target_hardware_address, target_protocol_address = struct.unpack("H H B B H 4s 4s 4s 4s")
+        hardware_type, protocol_type, hardware_length, protocol_length, operation, sender_hardware_address, sender_protocol_address, target_hardware_address, target_protocol_address = struct.unpack("H H B B H 6s 4s 6s 4s", packet)
         return cls(hardware_type=hardware_type,
                    protocol_type=protocol_type,
                    hardware_length=hardware_length,

@@ -27,6 +27,6 @@ class IPv6Packet(NetworkPacket):
 
     @classmethod
     def parse(cls, packet: bytes):
-        unpacked = struct.unpack("4s H B B 128s 128s")
+        unpacked = struct.unpack("4s H B B 16s 16s", packet)
         breakpoint()
         print(unpacked)

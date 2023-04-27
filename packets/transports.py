@@ -28,7 +28,6 @@ class SyncTransport(Transport):
 
     def serve(self) -> None:
         while True:
-            try:
                 stack = PacketStack()
                 frame = self.receive_frame()
                 layer = DataLinkLayer()
@@ -38,7 +37,6 @@ class SyncTransport(Transport):
                 print("PACKET")
                 print(datalink_packet)
                 print(network_packet)
-            except Exception:...
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
         self.socket.recv_into(frame_buffer)
