@@ -29,6 +29,9 @@ class ARPPacket(NetworkPacket):
     def __repr__(self):
         return f"<ARPPacket hardware_type={self.hardware_type}>"
 
+    def get_proto(self):
+        return None
+
     @classmethod
     def parse(cls, packet: bytes):
         (

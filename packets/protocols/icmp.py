@@ -12,6 +12,9 @@ class ICMPPacket(NetworkPacket):
         self.code = code
         self.checksum = checksum
 
+    def get_proto(self):
+        return None
+
     @classmethod
     def parse(cls, packet: bytes):
         format = "B B H"
@@ -64,3 +67,32 @@ class ICMPEchoPacket(ICMPEchoReplyPacket):
 
 class ICMPReplyPacket(ICMPEchoReplyPacket):
     ...
+
+class ICMPUnreachable(ICMPPacket):
+
+    def __init__(
+            self,
+            type: int,
+            code: int,
+            checksum: int,
+            unused: int,
+            next_hop_MTU: int):
+        super().__init__(type=type,
+                         code=code,
+                         checksum=checksum)
+        self.unused = unused
+        self.next_hop_MTU = next_hop_MTU
+
+    @classmethod
+    def parse(cls, packet: bytes):
+        format = "B B H H H"
+        (type, code, checksum, unused, next_hop_MTU) = struct.unpack(
+            format, packet[: struct.calcsize(format)]
+        )
+        return cls(
+            type=type,
+            code=code,
+            checksum=socket.htons(checksum),
+            unused=unused,
+            next_hop_MTU=next_hop_MTU
+        )

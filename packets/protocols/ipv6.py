@@ -28,6 +28,9 @@ class IPv6Packet(NetworkPacket):
     def __repr__(self):
         return f"<IPv6Packet src_addr={self.src_addr} dest_addr={self.dest_addr}>"
 
+    def get_proto(self):
+        return None
+
     @classmethod
     def parse(cls, packet: bytes):
         unpacked = struct.unpack("4s H B B 16s 16s", packet)

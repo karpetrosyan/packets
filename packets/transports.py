@@ -3,7 +3,7 @@ import socket
 
 from packets.data_units import Frame
 from packets.handlers import Handler
-from packets.layers import DataLinkLayer, NetworkLayer
+from packets.layers import DataLinkLayer, NetworkLayer, TransportLayer
 from packets.protocols.base import PacketStack
 from packets.protocols.ipv4 import IPv4Packet
 
@@ -41,6 +41,7 @@ class SyncTransport(Transport):
             (segment, network_packet) = network_layer.decapsulate(
                 data=packet, stack=stack
             )
+
             print("PACKET")
             print(datalink_packet)
             print(network_packet)
@@ -48,6 +49,13 @@ class SyncTransport(Transport):
                 if network_packet.icmp:
                     print(network_packet.icmp)
                     # print(bytes(network_packet.icmp.data))
+            network_proto = stack.network_packet.get_proto()
+            if network_proto is None:
+                continue
+            if network_proto == 6:
+                transport_layer = TransportLayer()
+                (_, transport_packet) = transport_layer.decapsulate(data=segment, stack=stack)
+                print(transport_packet)
 
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)

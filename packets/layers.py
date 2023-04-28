@@ -8,6 +8,7 @@ from packets.protocols.ethernet import EthernetPacket
 from packets.protocols.icmp import ICMPEchoPacket, ICMPPacket, ICMPReplyPacket
 from packets.protocols.ipv4 import IPv4Packet
 from packets.protocols.ipv6 import IPv6Packet
+from packets.protocols.tcp import TCPPacket
 
 logger = logging.getLogger("packets")
 
@@ -61,6 +62,8 @@ class NetworkLayer(Layer):
             return ICMPEchoPacket.parse(packet=packet)
         elif icmp_packet.type == 0:
             return ICMPReplyPacket.parse(packet=packet)
+        elif icmp_packet.type == 3:
+            return
         else:
             logger.warning(f"Invalid icmp packet {icmp_packet.type}")
             raise Exception
@@ -107,10 +110,21 @@ class TransportLayer(Layer):
     def incapsulate(self):
         ...
 
+    def _decapsualte_tcp(self, data: DataUnit, stack:PacketStack) -> typing.Tuple[DataUnit, ProtocolPacket]:
+        segment = typing.cast(Segment, data)
+        tcp_packet = TCPPacket.parse(packet=segment.data)
+        new_segment = Segment(data=segment.data[len(segment.data):], end=0)
+        stack.push(tcp_packet)
+        return new_segment, tcp_packet
+
     def decapsulate(
         self, data: DataUnit, stack: PacketStack
     ) -> typing.Tuple[DataUnit, ProtocolPacket]:
-        return  # type: ignore
+        network_packet = stack.network_packet
+        if network_packet.get_proto() == 6:
+            return self._decapsualte_tcp(data=data, stack=stack)
+        else:
+            raise Exception(f"Tcp {network_packet.get_proto()}")
 
     def get_layer(self):
         return 4

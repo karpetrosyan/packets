@@ -11,7 +11,8 @@ class DataLinkPacket(ProtocolPacket):
 
 
 class NetworkPacket(ProtocolPacket):
-    ...
+    def get_proto(self):
+        raise NotImplementedError()
 
 
 class TransportPacket(ProtocolPacket):

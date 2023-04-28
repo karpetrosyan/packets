@@ -43,6 +43,9 @@ class IPv4Packet(NetworkPacket):
     def __repr__(self):
         return f"<IPPacket src_addr={self.src_addr} dest_addr={self.dest_addr}>"
 
+    def get_proto(self):
+        return self.protocol
+
     @classmethod
     def parse(cls, packet: bytes):
         version_header_length = packet[0]
