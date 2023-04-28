@@ -1,6 +1,8 @@
 import socket
 import struct
+
 from typing_extensions import Self
+
 from .base import NetworkPacket
 
 
@@ -39,12 +41,22 @@ class ICMPEchoReplyPacket(ICMPPacket):
         self.data = data
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} type={self.type} code={self.code} checksum={hex(self.checksum)}>"
+        return (
+                f"<{self.__class__.__name__} "
+                f"type={self.type} code={self.code} "
+                f"checksum={hex(self.checksum)}>"
+        )
 
     @classmethod
     def parse(cls, packet: bytes) -> Self:
         format = "B B H H H"
-        type, code, checksum, id, seq = struct.unpack(format, packet[:struct.calcsize(format)])
+        (
+         type,
+         code,
+         checksum,
+         id,
+         seq
+        ) = struct.unpack(format, packet[:struct.calcsize(format)])
         data = packet[struct.calcsize(format):]
         return cls(type=type,
                    code=code,

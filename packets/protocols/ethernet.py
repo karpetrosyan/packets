@@ -4,6 +4,7 @@ import struct
 from ..utils import enforce_mac_address
 from .base import DataLinkPacket
 
+
 class EthernetPacket(DataLinkPacket):
     def __init__(self,
                  src_addr: str,
@@ -17,7 +18,8 @@ class EthernetPacket(DataLinkPacket):
         return self.type
 
     def __repr__(self):
-        return f"<EthernetPacket src_addr={self.src_addr} dest_addr={self.dest_addr} type={self.type}>"
+        return f"<EthernetPacket src_addr={self.src_addr}" \
+               f" dest_addr={self.dest_addr} type={self.type}>"
 
     @classmethod
     def parse(cls, packet: bytes):

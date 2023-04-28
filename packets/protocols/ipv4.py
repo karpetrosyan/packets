@@ -1,11 +1,11 @@
 import socket
 import struct
 import typing
-from dataclasses import dataclass
 
 from ..utils import enforce_ipv4
 from .base import NetworkPacket
 from .icmp import ICMPPacket
+
 
 class IPv4Packet(NetworkPacket):
 
@@ -47,7 +47,18 @@ class IPv4Packet(NetworkPacket):
     def parse(cls, packet: bytes):
         version_header_length = packet[0]
         header_length = (version_header_length & 15) * 4
-        version_ihl, type_of_service, total_length, id, fragment_offset, ttl, proto, checksum, src, target = struct.unpack('B B H H H B B H 4s 4s', packet[:20])
+        (
+            version_ihl,
+            type_of_service,
+            total_length,
+            id,
+            fragment_offset,
+            ttl,
+            proto,
+            checksum,
+            src,
+            target
+        ) = struct.unpack("B B H H H B B H 4s 4s", packet[:20])
         data = packet[header_length:]
         src = enforce_ipv4(src)
         target = enforce_ipv4(target)

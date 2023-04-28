@@ -79,52 +79,17 @@ all = [
 
 [tool.black]
 target-version = ["py37"]
-line-length = 120
+line-length = 88
 skip-string-normalization = true
 
 [tool.ruff]
-target-version = "py37"
-line-length = 120
+ignore = []
+line-length = 88
 select = [
-  "A",
-  "ARG",
-  "B",
-  "C",
-  "DTZ",
-  "E",
-  "EM",
-  "F",
-  "FBT",
-  "I",
-  "ICN",
-  "ISC",
-  "N",
-  "PLC",
-  "PLE",
-  "PLR",
-  "PLW",
-  "Q",
-  "RUF",
-  "S",
-  "T",
-  "TID",
-  "UP",
-  "W",
-  "YTT",
-]
-ignore = [
-  # Allow non-abstract empty methods in abstract base classes
-  "B027",
-  # Allow boolean positional values in function calls, like `dict.get(... True)`
-  "FBT003",
-  # Ignore checks for possible passwords
-  "S105", "S106", "S107",
-  # Ignore complexity
-  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
-]
-unfixable = [
-  # Don't touch unused imports
-  "F401",
+    "E",
+    "F",
+    "W",
+    "I001"
 ]
 
 [tool.ruff.isort]

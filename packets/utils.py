@@ -1,5 +1,6 @@
 import ipaddress
 
+
 def enforce_mac_address(address: bytes) -> str:
     ip_parts = []
     for byte in address:

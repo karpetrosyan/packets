@@ -1,9 +1,8 @@
-import socket
 import struct
-from dataclasses import dataclass
+
 from ..utils import enforce_ipv6
-from ..utils import enforce_ipv4
 from .base import NetworkPacket
+
 
 class IPv6Packet(NetworkPacket):
 
@@ -31,7 +30,14 @@ class IPv6Packet(NetworkPacket):
     @classmethod
     def parse(cls, packet: bytes):
         unpacked = struct.unpack("4s H B B 16s 16s", packet)
-        version_traffic_flow, payload_length, next_header, hop_limit, src_addr, dest_addr = unpacked
+        (
+            version_traffic_flow,
+            payload_length,
+            next_header,
+            hop_limit,
+            src_addr,
+            dest_addr
+        ) = unpacked
         version = int.from_bytes(version_traffic_flow, "big") >> 28
         traffic_clss = int.from_bytes(version_traffic_flow, "big") & 267386880
         flow_label = int.from_bytes(version_traffic_flow, "big") & 1048575

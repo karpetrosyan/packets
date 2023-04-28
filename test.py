@@ -1,5 +1,5 @@
-from packets.transports import SyncTransport
 from packets.handlers import Handler
+from packets.transports import SyncTransport
 
 handler = Handler(name="test")
 

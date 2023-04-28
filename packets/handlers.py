@@ -1,13 +1,16 @@
 import typing
-from .filters import Filter
-from .protocols.base import ProtocolPacket, PacketStack
+
+from packets.filters import Filter
+from packets.protocols.base import ProtocolPacket
+
 
 class Handler:
 
     def __init__(self,
                  name: str,
                  filters: typing.Optional[typing.Iterable[Filter]] = None,
-                 callback: typing.Optional[typing.Callable[[typing.Dict], None]] = None):
+                 callback: typing.Optional[
+                     typing.Callable[[typing.Dict], None]] = None):
         if filters is None:
            filters = typing.cast(typing.Iterable[Filter], [])
 
