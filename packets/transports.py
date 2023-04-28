@@ -1,4 +1,3 @@
-import socket
 import typing
 
 from packets.data_units import Frame
