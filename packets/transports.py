@@ -1,4 +1,5 @@
 import typing
+import socket
 
 from packets.data_units import Frame
 from packets.handlers import Handler
@@ -7,12 +8,14 @@ from packets.protocols.base import PacketStack
 from packets.protocols.ipv4 import IPv4Packet
 
 MAXIMUM_FRAME_SIZE = 1518  # Maximum size of ethernet frame
-class Transport:
 
-    def __init__(self,
-                 handlers: typing.Iterable[Handler],
-                 interface: typing.Optional[str] = None,
-                 ):
+
+class Transport:
+    def __init__(
+        self,
+        handlers: typing.Iterable[Handler],
+        interface: typing.Optional[str] = None,
+    ):
         self.socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
         self.handlers = handlers
         if interface:
@@ -26,28 +29,26 @@ class Transport:
 
 
 class SyncTransport(Transport):
-
     def serve(self) -> None:
         while True:
-                stack = PacketStack()
-                frame = self.receive_frame()
-                datalink_layer = DataLinkLayer()
-                (
-                    packet,
-                    datalink_packet
-                ) = datalink_layer.decapsulate(data=frame, stack=stack)
-                network_layer = NetworkLayer()
-                (
-                    segment,
-                    network_packet
-                ) = network_layer.decapsulate(data=packet, stack=stack)
-                print("PACKET")
-                print(datalink_packet)
-                print(network_packet)
-                if isinstance(network_packet, IPv4Packet):
-                    if network_packet.icmp:
-                        print(network_packet.icmp)
-                        # print(bytes(network_packet.icmp.data))
+            stack = PacketStack()
+            frame = self.receive_frame()
+            datalink_layer = DataLinkLayer()
+            (packet, datalink_packet) = datalink_layer.decapsulate(
+                data=frame, stack=stack
+            )
+            network_layer = NetworkLayer()
+            (segment, network_packet) = network_layer.decapsulate(
+                data=packet, stack=stack
+            )
+            print("PACKET")
+            print(datalink_packet)
+            print(network_packet)
+            if isinstance(network_packet, IPv4Packet):
+                if network_packet.icmp:
+                    print(network_packet.icmp)
+                    # print(bytes(network_packet.icmp.data))
+
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
         received = self.socket.recv_into(frame_buffer)

@@ -6,10 +6,7 @@ from .base import DataLinkPacket
 
 
 class EthernetPacket(DataLinkPacket):
-    def __init__(self,
-                 src_addr: str,
-                 dest_addr: str,
-                 type: int):
+    def __init__(self, src_addr: str, dest_addr: str, type: int):
         self.src_addr = src_addr
         self.dest_addr = dest_addr
         self.type = type
@@ -18,8 +15,10 @@ class EthernetPacket(DataLinkPacket):
         return self.type
 
     def __repr__(self):
-        return f"<EthernetPacket src_addr={self.src_addr}" \
-               f" dest_addr={self.dest_addr} type={self.type}>"
+        return (
+            f"<EthernetPacket src_addr={self.src_addr}"
+            f" dest_addr={self.dest_addr} type={self.type}>"
+        )
 
     @classmethod
     def parse(cls, packet: bytes):
@@ -29,5 +28,5 @@ class EthernetPacket(DataLinkPacket):
         return cls(
             src_addr=enforce_mac_address(src_addr),
             dest_addr=enforce_mac_address(dest_addr),
-            type=socket.htons(type)
+            type=socket.htons(type),
         )

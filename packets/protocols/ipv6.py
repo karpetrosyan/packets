@@ -5,16 +5,17 @@ from .base import NetworkPacket
 
 
 class IPv6Packet(NetworkPacket):
-
-    def __init__(self,
-                 version: int,
-                 traffic_class: int,
-                 flow_label: int,
-                 payload_length: int,
-                 next_header: int,
-                 hop_limit: int,
-                 src_addr: str,
-                 dest_addr: str):
+    def __init__(
+        self,
+        version: int,
+        traffic_class: int,
+        flow_label: int,
+        payload_length: int,
+        next_header: int,
+        hop_limit: int,
+        src_addr: str,
+        dest_addr: str,
+    ):
         self.version = version
         self.traffic_class = traffic_class
         self.flow_label = flow_label
@@ -36,19 +37,19 @@ class IPv6Packet(NetworkPacket):
             next_header,
             hop_limit,
             src_addr,
-            dest_addr
+            dest_addr,
         ) = unpacked
         version = int.from_bytes(version_traffic_flow, "big") >> 28
         traffic_clss = int.from_bytes(version_traffic_flow, "big") & 267386880
         flow_label = int.from_bytes(version_traffic_flow, "big") & 1048575
         obj = cls(
-            version = version,
+            version=version,
             traffic_class=traffic_clss,
             flow_label=flow_label,
             payload_length=payload_length,
             next_header=next_header,
             hop_limit=hop_limit,
             src_addr=enforce_ipv6(src_addr),
-            dest_addr=enforce_ipv6(src_addr)
-            )
+            dest_addr=enforce_ipv6(src_addr),
+        )
         return obj

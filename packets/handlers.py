@@ -5,14 +5,14 @@ from packets.protocols.base import ProtocolPacket
 
 
 class Handler:
-
-    def __init__(self,
-                 name: str,
-                 filters: typing.Optional[typing.Iterable[Filter]] = None,
-                 callback: typing.Optional[
-                     typing.Callable[[typing.Dict], None]] = None):
+    def __init__(
+        self,
+        name: str,
+        filters: typing.Optional[typing.Iterable[Filter]] = None,
+        callback: typing.Optional[typing.Callable[[typing.Dict], None]] = None,
+    ):
         if filters is None:
-           filters = typing.cast(typing.Iterable[Filter], [])
+            filters = typing.cast(typing.Iterable[Filter], [])
 
         self.name = name
         self.filters = filters

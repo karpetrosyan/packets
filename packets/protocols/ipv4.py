@@ -8,25 +8,25 @@ from .icmp import ICMPPacket
 
 
 class IPv4Packet(NetworkPacket):
-
-
-    def __init__(self,
-                version: int,
-                ihl: int,
-                type_of_service: int,
-                length: int,
-                flags: int,
-                checksum: int,
-                fragment_offset: int,
-                id: int,
-                ttl: int,
-                protocol: int,
-                src_addr: str,
-                dest_addr: str,
-                data: bytes,
-                icmp: typing.Optional[ICMPPacket] = None):
+    def __init__(
+        self,
+        version: int,
+        ihl: int,
+        type_of_service: int,
+        length: int,
+        flags: int,
+        checksum: int,
+        fragment_offset: int,
+        id: int,
+        ttl: int,
+        protocol: int,
+        src_addr: str,
+        dest_addr: str,
+        data: bytes,
+        icmp: typing.Optional[ICMPPacket] = None,
+    ):
         self.version = version
-        self.ihl = ihl,
+        self.ihl = (ihl,)
         self.type_of_service = type_of_service
         self.length = length
         self.flags = flags
@@ -57,14 +57,14 @@ class IPv4Packet(NetworkPacket):
             proto,
             checksum,
             src,
-            target
+            target,
         ) = struct.unpack("B B H H H B B H 4s 4s", packet[:20])
         data = packet[header_length:]
         src = enforce_ipv4(src)
         target = enforce_ipv4(target)
         version, ihl = version_ihl >> 4, version_ihl & 0xF
         flags = fragment_offset >> 13
-        fragment_offset = fragment_offset & 0x1fff
+        fragment_offset = fragment_offset & 0x1FFF
         obj = cls(
             version=version,
             ihl=ihl,
@@ -78,7 +78,6 @@ class IPv4Packet(NetworkPacket):
             protocol=proto,
             src_addr=src,
             dest_addr=target,
-            data=data
+            data=data,
         )
         return obj
-
