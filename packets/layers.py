@@ -77,7 +77,7 @@ class NetworkLayer(Layer):
 
     def _decapsulate_ipv6(
         self, packet: Packet, stack: PacketStack
-    ) -> typing.Tuple[Segment, ProtocolPacket, ProtocolPacket]:
+    ) -> typing.Tuple[Segment, ProtocolPacket]:
         ip_packet_bytes = packet.data[:40]
         ip_packet = IPv6Packet.parse(packet=ip_packet_bytes)
         stack.push(ip_packet)
