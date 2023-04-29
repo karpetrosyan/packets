@@ -41,7 +41,10 @@ class IPv4Packet(NetworkPacket):
         self.icmp = icmp
 
     def __repr__(self):
-        return f"<IPPacket src_addr={self.src_addr} dest_addr={self.dest_addr}>"
+        text = f"<IPPacket src_addr={self.src_addr} dest_addr={self.dest_addr}>"
+        if self.icmp:
+            text += f"\n\t{self.icmp}"
+        return text
 
     def get_proto(self):
         return self.protocol

@@ -30,32 +30,28 @@ class Transport:
 
 class SyncTransport(Transport):
     def serve(self) -> None:
+        layers = (
+            DataLinkLayer,
+            NetworkLayer,
+            TransportLayer
+        )
         while True:
             stack = PacketStack()
-            frame = self.receive_frame()
-            datalink_layer = DataLinkLayer()
-            (packet, datalink_packet) = datalink_layer.decapsulate(
-                data=frame, stack=stack
-            )
-            network_layer = NetworkLayer()
-            (segment, network_packet) = network_layer.decapsulate(
-                data=packet, stack=stack
-            )
+            data_unit = self.receive_frame()
+            for layer in layers:
+                try:
+                    data_unit, packet = layer().decapsulate(data=data_unit, stack=stack)
+                    print(packet)
+                except Exception:
+                    ...
 
             print("PACKET")
-            print(datalink_packet)
-            print(network_packet)
-            if isinstance(network_packet, IPv4Packet):
-                if network_packet.icmp:
-                    print(network_packet.icmp)
-                    # print(bytes(network_packet.icmp.data))
-            network_proto = stack.network_packet.get_proto()
-            if network_proto is None:
-                continue
-            if network_proto == 6:
-                transport_layer = TransportLayer()
-                (_, transport_packet) = transport_layer.decapsulate(data=segment, stack=stack)
-                print(transport_packet)
+            for packet in stack:
+                print(packet)
+
+
+
+
 
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)

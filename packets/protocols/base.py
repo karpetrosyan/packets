@@ -29,6 +29,14 @@ class PacketStack:
         self.datalink_packet = datalink_packet
         self.network_packet = network_packet
         self.transport_packet = transport_packet
+        self._iter_pointer = 0
+
+    def __iter__(self):
+        for packet in self.datalink_packet, self.network_packet, self.transport_packet:
+            if packet is None:
+                return
+            yield packet
+        return
 
     def push(self, packet: ProtocolPacket):
         if not self.datalink_packet:

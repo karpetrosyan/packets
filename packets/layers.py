@@ -93,7 +93,12 @@ class NetworkLayer(Layer):
         protocol_type = stack.datalink_packet.get_type()
         packet = typing.cast(Packet, data)
         if protocol_type == 2048:
-            return self._decapsulate_ipv4(packet=packet, stack=stack)
+            segment, ip_packet = self._decapsulate_ipv4(packet=packet, stack=stack)
+            ip_packet = typing.cast(IPv4Packet, ip_packet)
+            if ip_packet.protocol == 1:
+                icmp_packet = self._decapsulate_icmp(packet=segment.data)
+                ip_packet.icmp = icmp_packet
+            return segment, ip_packet
         elif protocol_type == 34525:
             return self._decapsulate_ipv6(packet=packet, stack=stack)
         elif protocol_type == 2054:
