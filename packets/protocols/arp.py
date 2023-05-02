@@ -44,7 +44,7 @@ class ARPPacket(NetworkPacket):
             sender_protocol_address,
             target_hardware_address,
             target_protocol_address,
-        ) = struct.unpack("H H B B H 6s 4s 6s 4s", packet)
+        ) = struct.unpack("H H B B H 6s 4s 6s 4s", packet[:28])
         return cls(
             hardware_type=hardware_type,
             protocol_type=protocol_type,

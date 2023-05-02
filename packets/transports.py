@@ -42,9 +42,12 @@ class SyncTransport(Transport):
                 try:
                     data_unit, packet = layer().decapsulate(data=data_unit, stack=stack)
                     print(packet)
-                except Exception:
-                    ...
 
+                    if data_unit.is_empty():
+                        break
+                except Exception as ex:
+                    print(ex)
+            if not data_unit.is_empty(): breakpoint()
             print("PACKET")
             for packet in stack:
                 print(packet)

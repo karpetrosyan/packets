@@ -9,6 +9,7 @@ from packets.protocols.icmp import ICMPEchoPacket, ICMPPacket, ICMPReplyPacket
 from packets.protocols.ipv4 import IPv4Packet
 from packets.protocols.ipv6 import IPv6Packet
 from packets.protocols.tcp import TCPPacket
+from packets.protocols.udp import UDPPacket
 
 logger = logging.getLogger("packets")
 
@@ -50,10 +51,9 @@ class NetworkLayer(Layer):
     def _decapsulate_arp(
         self, packet: Packet, stack: PacketStack
     ) -> typing.Tuple[Segment, ProtocolPacket]:
-        arp_packet_bytes = packet.data[:28]
-        arp_packet = ARPPacket.parse(packet=arp_packet_bytes)
+        arp_packet = ARPPacket.parse(packet=packet.data)
         stack.push(arp_packet)
-        return Segment(packet.data[:28], end=packet.end), arp_packet
+        return Segment(packet.data[28:], end=packet.end), arp_packet
 
     def _decapsulate_icmp(self, packet: bytes) -> ICMPPacket:
         icmp_packet_bytes = packet[:4]
@@ -98,10 +98,12 @@ class NetworkLayer(Layer):
             if ip_packet.protocol == 1:
                 icmp_packet = self._decapsulate_icmp(packet=segment.data)
                 ip_packet.icmp = icmp_packet
+                segment = Segment(segment.data[len(segment.data):], end=segment.end)
             return segment, ip_packet
         elif protocol_type == 34525:
             return self._decapsulate_ipv6(packet=packet, stack=stack)
         elif protocol_type == 2054:
+            print(len(packet.data))
             return self._decapsulate_arp(packet=packet, stack=stack)
         else:
             logger.warning(f"Unsupported protocol type received {protocol_type}")
@@ -122,12 +124,21 @@ class TransportLayer(Layer):
         stack.push(tcp_packet)
         return new_segment, tcp_packet
 
+    def _decapsualte_udp(self, data: DataUnit, stack:PacketStack) -> typing.Tuple[DataUnit, ProtocolPacket]:
+        segment = typing.cast(Segment, data)
+        udp_packet = UDPPacket.parse(packet=segment.data)
+        new_segment = Segment(data=segment.data[len(segment.data):], end=0)
+        stack.push(udp_packet)
+        return new_segment, udp_packet
+
     def decapsulate(
         self, data: DataUnit, stack: PacketStack
     ) -> typing.Tuple[DataUnit, ProtocolPacket]:
         network_packet = stack.network_packet
         if network_packet.get_proto() == 6:
             return self._decapsualte_tcp(data=data, stack=stack)
+        elif network_packet.get_proto() == 17:
+            return self._decapsualte_udp(data=data, stack=stack)
         else:
             raise Exception(f"Tcp {network_packet.get_proto()}")
 

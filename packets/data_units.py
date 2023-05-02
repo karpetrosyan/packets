@@ -8,6 +8,8 @@ class DataUnit:
     def data(self):
         return self._data[self.start : self.end]
 
+    def is_empty(self) -> bool:
+        return bytes(self.data) == b''
 
 class Frame(DataUnit):
     ...

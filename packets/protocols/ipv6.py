@@ -29,7 +29,7 @@ class IPv6Packet(NetworkPacket):
         return f"<IPv6Packet src_addr={self.src_addr} dest_addr={self.dest_addr}>"
 
     def get_proto(self):
-        return None
+        return self.next_header
 
     @classmethod
     def parse(cls, packet: bytes):
