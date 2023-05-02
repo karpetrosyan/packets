@@ -44,7 +44,10 @@ class TCPPacket(TransportPacket):
         self.data = data
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} src_port={self.src_port} dest_port={self.dest_port}>"
+        return f"<{self.__class__.__name__} src_port={self.src_port} dest_port={self.dest_port} data={bytes(self.data)}>"
+
+    def __len__(self):
+        return struct.calcsize("H H 4s 4s H H H H") + len(self.data)
 
     @classmethod
     def parse(cls, packet: bytes):

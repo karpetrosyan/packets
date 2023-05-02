@@ -37,6 +37,7 @@ class DataLinkLayer(Layer):
         frame = typing.cast(Frame, data)
         ethernet_packet_bytes = frame.data[:14]
         ethernet_packet = EthernetPacket.parse(packet=ethernet_packet_bytes)
+        print(len(frame.data))
         stack.push(ethernet_packet)
         return Packet(data=frame.data[14:], end=data.end), ethernet_packet
 

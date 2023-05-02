@@ -9,11 +9,16 @@ class DataLinkPacket(ProtocolPacket):
     def get_type(self):
         raise NotImplementedError()
 
+    def __len__(self):
+        raise NotImplementedError()
+
 
 class NetworkPacket(ProtocolPacket):
     def get_proto(self):
         raise NotImplementedError()
 
+    def __len__(self):
+        raise NotImplementedError()
 
 class TransportPacket(ProtocolPacket):
     ...
@@ -30,6 +35,9 @@ class PacketStack:
         self.network_packet = network_packet
         self.transport_packet = transport_packet
         self._iter_pointer = 0
+
+    def __len__(self):
+        return sum(packet for packet in (self.datalink_packet, self.network_packet, self.transport_packet))
 
     def __iter__(self):
         for packet in self.datalink_packet, self.network_packet, self.transport_packet:

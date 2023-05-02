@@ -6,6 +6,9 @@ from packets.handlers import Handler
 from packets.layers import DataLinkLayer, NetworkLayer, TransportLayer
 from packets.protocols.base import PacketStack
 from packets.protocols.ipv4 import IPv4Packet
+import logging
+
+logger = logging.getLogger("packets")
 
 MAXIMUM_FRAME_SIZE = 1518  # Maximum size of ethernet frame
 
@@ -47,7 +50,9 @@ class SyncTransport(Transport):
                         break
                 except Exception as ex:
                     print(ex)
-            if not data_unit.is_empty(): breakpoint()
+            if not data_unit.is_empty():
+                logger.debug(f"Maybe padding {bytes(data_unit.data)}")
+                continue
             print("PACKET")
             for packet in stack:
                 print(packet)
