@@ -49,6 +49,9 @@ class IPv4Packet(NetworkPacket):
     def get_proto(self):
         return self.protocol
 
+    def __len__(self):
+        return struct.calcsize("B B H H H B B H 4s 4s") + len(self.data)
+
     @classmethod
     def parse(cls, packet: bytes):
         version_header_length = packet[0]

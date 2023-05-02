@@ -20,6 +20,9 @@ class EthernetPacket(DataLinkPacket):
             f" dest_addr={self.dest_addr} type={self.type}>"
         )
 
+    def __len__(self):
+        return 14
+
     @classmethod
     def parse(cls, packet: bytes):
         ethernet_frame = packet[:14]

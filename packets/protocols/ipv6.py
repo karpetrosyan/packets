@@ -28,6 +28,9 @@ class IPv6Packet(NetworkPacket):
     def __repr__(self):
         return f"<IPv6Packet src_addr={self.src_addr} dest_addr={self.dest_addr}>"
 
+    def __len__(self):
+        return 1
+
     def get_proto(self):
         return self.next_header
 

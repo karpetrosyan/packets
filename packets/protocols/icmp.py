@@ -60,6 +60,8 @@ class ICMPEchoReplyPacket(ICMPPacket):
             data=data,
         )
 
+    def __len__(self):
+        return 8
 
 class ICMPEchoPacket(ICMPEchoReplyPacket):
     ...
@@ -82,6 +84,9 @@ class ICMPUnreachable(ICMPPacket):
                          checksum=checksum)
         self.unused = unused
         self.next_hop_MTU = next_hop_MTU
+
+    def __len__(self):
+        return struct.calcsize("B B H H H")
 
     @classmethod
     def parse(cls, packet: bytes):

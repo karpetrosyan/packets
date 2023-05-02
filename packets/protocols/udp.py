@@ -18,6 +18,9 @@ class UDPPacket(TransportPacket):
     def __repr__(self):
         return f"<{self.__class__.__name__} src_port={self.src_port} dest_port={self.dest_port}>"
 
+    def __len__(self):
+        return struct.calcsize("H H H H")
+
     @classmethod
     def parse(cls, packet: bytes):
         format = "H H H H"
