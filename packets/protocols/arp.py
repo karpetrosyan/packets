@@ -2,6 +2,7 @@ import struct
 
 from .base import NetworkPacket
 from ..utils import enforce_ipv4
+from ..utils import enforce_mac
 
 
 class ARPPacket(NetworkPacket):
@@ -55,8 +56,8 @@ class ARPPacket(NetworkPacket):
             hardware_length=hardware_length,
             protocol_length=protocol_length,
             operation=operation,
-            sender_hardware_address=sender_hardware_address,
+            sender_hardware_address=enforce_mac(sender_hardware_address),
             sender_protocol_address=enforce_ipv4(sender_protocol_address),
-            target_hardware_address=target_hardware_address,
+            target_hardware_address=enforce_mac(target_hardware_address),
             target_protocol_address=enforce_ipv4(target_protocol_address),
         )

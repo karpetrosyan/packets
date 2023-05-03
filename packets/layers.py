@@ -54,6 +54,7 @@ class NetworkLayer(Layer):
     ) -> typing.Tuple[Segment, ProtocolPacket]:
         arp_packet = ARPPacket.parse(packet=packet.data)
         stack.push(arp_packet)
+        breakpoint()
         return Segment(packet.data[28:], end=packet.end), arp_packet
 
     def _decapsulate_icmp(self, packet: bytes) -> ICMPPacket:
