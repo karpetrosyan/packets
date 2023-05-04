@@ -1,7 +1,7 @@
 import socket
 import struct
 
-from ..utils import enforce_mac_address
+from ..utils import enforce_mac
 from .base import DataLinkPacket
 
 
@@ -29,7 +29,7 @@ class EthernetPacket(DataLinkPacket):
         format = "6s 6s H"
         src_addr, dest_addr, type = struct.unpack(format, ethernet_frame)
         return cls(
-            src_addr=enforce_mac_address(src_addr),
-            dest_addr=enforce_mac_address(dest_addr),
+            src_addr=enforce_mac(src_addr),
+            dest_addr=enforce_mac(dest_addr),
             type=socket.htons(type),
         )

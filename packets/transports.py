@@ -19,7 +19,7 @@ class Transport:
         handlers: typing.Iterable[Handler],
         interface: typing.Optional[str] = None,
     ):
-        self.socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
+        self.socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, 768)
         self.handlers = handlers
         if interface:
             self.socket.bind((interface, 0))
