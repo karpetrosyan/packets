@@ -37,7 +37,6 @@ class DataLinkLayer(Layer):
         frame = typing.cast(Frame, data)
         ethernet_packet_bytes = frame.data[:14]
         ethernet_packet = EthernetPacket.parse(packet=ethernet_packet_bytes)
-        print(len(frame.data))
         stack.push(ethernet_packet)
         return Packet(data=frame.data[14:], end=data.end), ethernet_packet
 
@@ -54,7 +53,6 @@ class NetworkLayer(Layer):
     ) -> typing.Tuple[Segment, ProtocolPacket]:
         arp_packet = ARPPacket.parse(packet=packet.data)
         stack.push(arp_packet)
-        breakpoint()
         return Segment(packet.data[28:], end=packet.end), arp_packet
 
     def _decapsulate_icmp(self, packet: bytes) -> ICMPPacket:
@@ -105,7 +103,6 @@ class NetworkLayer(Layer):
         elif protocol_type == 34525:
             return self._decapsulate_ipv6(packet=packet, stack=stack)
         elif protocol_type == 2054:
-            print(len(packet.data))
             return self._decapsulate_arp(packet=packet, stack=stack)
         else:
             logger.warning(f"Unsupported protocol type received {protocol_type}")

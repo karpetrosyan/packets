@@ -1,20 +1,18 @@
 import typing
 
-from packets.protocols.base import ProtocolPacket
-
+from packets.protocols.base import DataLinkPacket
+from packets.protocols.base import NetworkPacket
+from packets.protocols.base import TransportPacket
 
 class Filter:
     def __init__(
-        self,
-        name: str,
-        filter_functions: typing.Iterable[typing.Callable[[ProtocolPacket], bool]],
-        packets: typing.Optional[typing.Container[typing.Type[ProtocolPacket]]],
+            self,
+            name: str,
+            datalink_filter: typing.Optional[typing.Callable[[DataLinkPacket], bool]] = None,
+            network_filter: typing.Optional[typing.Callable[[NetworkPacket], bool]] = None,
+            transport_filter: typing.Optional[typing.Callable[[TransportPacket], bool]] = None
     ):
-        if packets is None:
-            packets = typing.cast(
-                typing.Container[typing.Type[ProtocolPacket]], [ProtocolPacket]
-            )
-
         self.name = name
-        self.filter_functions = filter_functions
-        self.packets = packets
+        self.datalink_filter = datalink_filter
+        self.network_filter = network_filter
+        self.transport_filter = transport_filter

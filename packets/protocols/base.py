@@ -2,12 +2,17 @@ import typing
 
 
 class ProtocolPacket:
-    ...
+
+    def get_layer(self):
+        raise NotImplementedError()
 
 
 class DataLinkPacket(ProtocolPacket):
     def get_type(self):
         raise NotImplementedError()
+
+    def get_layer(self):
+        return 2
 
     def __len__(self):
         raise NotImplementedError()
@@ -17,11 +22,15 @@ class NetworkPacket(ProtocolPacket):
     def get_proto(self):
         raise NotImplementedError()
 
+    def get_layer(self):
+        return 3
+
     def __len__(self):
         raise NotImplementedError()
 
 class TransportPacket(ProtocolPacket):
-    ...
+    def get_layer(self):
+        return 4
 
 
 class PacketStack:

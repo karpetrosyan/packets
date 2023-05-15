@@ -39,23 +39,30 @@ class SyncTransport(Transport):
             TransportLayer
         )
         while True:
+            invalid_handlers = set()
             stack = PacketStack()
             data_unit = self.receive_frame()
             for layer in layers:
                 try:
                     data_unit, packet = layer().decapsulate(data=data_unit, stack=stack)
-                    print(packet)
+
+                    for handler in self.handlers:
+                        if handler not in invalid_handlers:
+                            is_valid = handler.validate(packet=packet)
+                            if not is_valid:
+                                invalid_handlers.add(handler)
 
                     if data_unit.is_empty():
                         break
                 except Exception as ex:
-                    print(ex)
+                    logger.error(str(ex))
             if not data_unit.is_empty():
                 logger.debug(f"Maybe padding {bytes(data_unit.data)}")
                 continue
-            print("PACKET")
-            for packet in stack:
-                print(packet)
+
+            for handler in self.handlers:
+                if handler not in invalid_handlers:
+                    handler.handle_success(packet_stack=stack)
 
 
 
