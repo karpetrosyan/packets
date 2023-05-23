@@ -3,7 +3,7 @@ import socket
 from .base import TransportPacket
 
 class TCPPacket(TransportPacket):
-
+    format = "H H 4s 4s H H H H"
     def __init__(self,
                  src_port: int,
                  dest_port: int,
@@ -47,12 +47,11 @@ class TCPPacket(TransportPacket):
         return f"<{self.__class__.__name__} src_port={self.src_port} dest_port={self.dest_port} data={bytes(self.data)}>"
 
     def __len__(self):
-        return struct.calcsize("H H 4s 4s H H H H") + len(self.data)
+        return struct.calcsize(self.format) + len(self.data)
 
     @classmethod
     def parse(cls, packet: bytes):
-        format = "H H 4s 4s H H H H"
-        unpacked = struct.unpack(format, packet[:20])
+        unpacked = struct.unpack(cls.format, packet[:20])
         (
             src_port,
             dest_port,
@@ -75,7 +74,7 @@ class TCPPacket(TransportPacket):
         syn = flags & 0b00000010
         fin = flags & 0b00000001
 
-        data = packet[struct.calcsize(format):]
+        data = packet[struct.calcsize(cls.format):]
         obj = cls(
             src_port=socket.htons(src_port),
             dest_port=socket.htons(dest_port),

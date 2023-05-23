@@ -6,6 +6,8 @@ from ..utils import enforce_mac
 
 
 class ARPPacket(NetworkPacket):
+    format = "H H B B H 6s 4s 6s 4s"
+
     def __init__(
         self,
         hardware_type: int,
@@ -13,9 +15,9 @@ class ARPPacket(NetworkPacket):
         hardware_length: int,
         protocol_length: int,
         operation: int,
-        sender_hardware_address: int,
+        sender_hardware_address: str,
         sender_protocol_address: str,
-        target_hardware_address: int,
+        target_hardware_address: str,
         target_protocol_address: str,
     ):
         self.hardware_type = hardware_type
@@ -35,7 +37,7 @@ class ARPPacket(NetworkPacket):
         return None
 
     def __len__(self):
-        return struct.calcsize("H H B B H 6s 4s 6s 4s")
+        return struct.calcsize(self.format)
 
     @classmethod
     def parse(cls, packet: bytes):
@@ -49,7 +51,7 @@ class ARPPacket(NetworkPacket):
             sender_protocol_address,
             target_hardware_address,
             target_protocol_address,
-        ) = struct.unpack("H H B B H 6s 4s 6s 4s", packet[:28])
+        ) = struct.unpack(cls.format, packet[:28])
         return cls(
             hardware_type=hardware_type,
             protocol_type=protocol_type,

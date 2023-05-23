@@ -3,6 +3,7 @@ import socket
 from .base import TransportPacket
 
 class UDPPacket(TransportPacket):
+    format = "H H H H"
 
     def __init__(self,
                  src_port: int,
@@ -19,12 +20,11 @@ class UDPPacket(TransportPacket):
         return f"<{self.__class__.__name__} src_port={self.src_port} dest_port={self.dest_port}>"
 
     def __len__(self):
-        return struct.calcsize("H H H H")
+        return struct.calcsize(self.format)
 
     @classmethod
     def parse(cls, packet: bytes):
-        format = "H H H H"
-        unpacked = struct.unpack(format, packet[:8])
+        unpacked = struct.unpack(cls.format, packet[:8])
         (
             src_port,
             dest_port,

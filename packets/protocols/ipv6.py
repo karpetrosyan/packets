@@ -5,6 +5,7 @@ from .base import NetworkPacket
 
 
 class IPv6Packet(NetworkPacket):
+    format = "4s H B B 16s 16s"
     def __init__(
         self,
         version: int,
@@ -36,7 +37,7 @@ class IPv6Packet(NetworkPacket):
 
     @classmethod
     def parse(cls, packet: bytes):
-        unpacked = struct.unpack("4s H B B 16s 16s", packet)
+        unpacked = struct.unpack(cls.format, packet)
         (
             version_traffic_flow,
             payload_length,

@@ -71,6 +71,7 @@ class ICMPReplyPacket(ICMPEchoReplyPacket):
     ...
 
 class ICMPUnreachable(ICMPPacket):
+    format = "B B H H H"
 
     def __init__(
             self,
@@ -86,13 +87,12 @@ class ICMPUnreachable(ICMPPacket):
         self.next_hop_MTU = next_hop_MTU
 
     def __len__(self):
-        return struct.calcsize("B B H H H")
+        return struct.calcsize(self.format)
 
     @classmethod
     def parse(cls, packet: bytes):
-        format = "B B H H H"
         (type, code, checksum, unused, next_hop_MTU) = struct.unpack(
-            format, packet[: struct.calcsize(format)]
+            cls.format, packet[: struct.calcsize(cls.format)]
         )
         return cls(
             type=type,

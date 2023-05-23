@@ -8,6 +8,8 @@ from .icmp import ICMPPacket
 
 
 class IPv4Packet(NetworkPacket):
+    format = "B B H H H B B H 4s 4s"
+
     def __init__(
         self,
         version: int,
@@ -50,7 +52,7 @@ class IPv4Packet(NetworkPacket):
         return self.protocol
 
     def __len__(self):
-        return struct.calcsize("B B H H H B B H 4s 4s") + len(self.data)
+        return struct.calcsize(self.format) + len(self.data)
 
     @classmethod
     def parse(cls, packet: bytes):
@@ -67,7 +69,7 @@ class IPv4Packet(NetworkPacket):
             checksum,
             src,
             target,
-        ) = struct.unpack("B B H H H B B H 4s 4s", packet[:20])
+        ) = struct.unpack(cls.format, packet[:20])
         data = packet[header_length:]
         src = enforce_ipv4(src)
         target = enforce_ipv4(target)

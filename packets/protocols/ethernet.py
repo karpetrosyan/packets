@@ -6,6 +6,8 @@ from .base import DataLinkPacket
 
 
 class EthernetPacket(DataLinkPacket):
+    format = "6s 6s H"
+
     def __init__(self, src_addr: str, dest_addr: str, type: int):
         self.src_addr = src_addr
         self.dest_addr = dest_addr
@@ -26,8 +28,7 @@ class EthernetPacket(DataLinkPacket):
     @classmethod
     def parse(cls, packet: bytes):
         ethernet_frame = packet[:14]
-        format = "6s 6s H"
-        src_addr, dest_addr, type = struct.unpack(format, ethernet_frame)
+        src_addr, dest_addr, type = struct.unpack(cls.format, ethernet_frame)
         return cls(
             src_addr=enforce_mac(src_addr),
             dest_addr=enforce_mac(dest_addr),
