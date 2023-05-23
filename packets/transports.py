@@ -30,6 +30,12 @@ class Transport:
     def receive_frame(self) -> Frame:
         raise NotImplementedError()
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.socket.close()
+
 
 class SyncTransport(Transport):
     def serve(self) -> None:
@@ -63,10 +69,6 @@ class SyncTransport(Transport):
             for handler in self.handlers:
                 if handler not in invalid_handlers:
                     handler.handle_success(packet_stack=stack)
-
-
-
-
 
     def receive_frame(self) -> Frame:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
