@@ -16,6 +16,7 @@ logger = logging.getLogger("packets")
 
 class Layer:
     def incapsulate(self):
+        # Add support for encapsulation
         raise NotImplementedError()
 
     def decapsulate(
@@ -34,6 +35,7 @@ class DataLinkLayer(Layer):
     def decapsulate(
         self, data: DataUnit, stack: PacketStack
     ) -> typing.Tuple[DataUnit, ProtocolPacket]:
+        # TODO: Check whatever protocol is Ethernet or not
         frame = typing.cast(Frame, data)
         ethernet_packet_bytes = frame.data[:14]
         ethernet_packet = EthernetPacket.parse(packet=ethernet_packet_bytes)

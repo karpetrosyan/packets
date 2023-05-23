@@ -3,10 +3,10 @@ from logging import config
 logger_config = {
     "version": 1,
     "handlers": {
-        "packets-stream": {
+        "default": {
             "class": "logging.StreamHandler",
             "formatter": "standard",
-            "level": "DEBUG",
+            "level": "INFO",
             "stream": "ext://sys.stderr",
         },
     },
@@ -18,7 +18,7 @@ logger_config = {
     },
     "loggers": {
         "packets": {
-            "handlers": ["packets-stream"],
+            "handlers": ["default"],
             "level": "INFO",
             "propagate": False,
         }
