@@ -16,14 +16,3 @@ class DataUnit:
 
     def is_empty(self) -> bool:
         return bytes(self.data) == b''
-
-class Frame(DataUnit):
-    ...
-
-
-class Packet(DataUnit):
-    ...
-
-
-class Segment(DataUnit):
-    ...

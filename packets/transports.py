@@ -1,8 +1,7 @@
 import typing
 import socket
-
-from packets.data_units import Frame
 from packets.handlers import Handler
+from packets.data_units import DataUnit
 from packets.layers import DataLinkLayer, NetworkLayer, TransportLayer
 from packets.protocols.base import PacketStack
 from packets.protocols.ipv4 import IPv4Packet
@@ -27,7 +26,7 @@ class Transport:
     def serve(self) -> None:
         raise NotImplementedError()
 
-    def receive_frame(self) -> Frame:
+    def receive_frame(self) -> DataUnit:
         raise NotImplementedError()
 
     def __enter__(self):
@@ -70,7 +69,7 @@ class SyncTransport(Transport):
                 if handler not in invalid_handlers:
                     handler.handle_success(packet_stack=stack)
 
-    def receive_frame(self) -> Frame:
+    def receive_frame(self) -> DataUnit:
         frame_buffer = bytearray(MAXIMUM_FRAME_SIZE)
         received = self.socket.recv_into(frame_buffer)
-        return Frame(data=memoryview(frame_buffer), end=received)
+        return DataUnit(data=memoryview(frame_buffer), end=received)
