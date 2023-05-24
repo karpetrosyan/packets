@@ -16,9 +16,6 @@ logger = logging.getLogger("packets")
 
 
 class Layer:
-    def incapsulate(self):
-        # Add support for encapsulation
-        raise NotImplementedError()
 
     def decapsulate(
         self, data: DataUnit, stack: PacketStack
@@ -30,8 +27,6 @@ class Layer:
 
 
 class DataLinkLayer(Layer):
-    def incapsulate(self):
-        ...
 
     def decapsulate(
         self, data: DataUnit, stack: PacketStack
@@ -48,8 +43,6 @@ class DataLinkLayer(Layer):
 
 
 class NetworkLayer(Layer):
-    def incapsulate(self):
-        ...
 
     def _decapsulate_arp(
         self, packet: Packet, stack: PacketStack
@@ -114,8 +107,6 @@ class NetworkLayer(Layer):
 
 
 class TransportLayer(Layer):
-    def incapsulate(self):
-        ...
 
     def _decapsualte_tcp(self, data: DataUnit, stack:PacketStack) -> typing.Tuple[DataUnit, ProtocolPacket]:
         segment = typing.cast(Segment, data)
